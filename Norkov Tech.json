@@ -1,0 +1,1184 @@
+{
+  "name": "Norkov Tech",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "44d9fe74-3dac-4576-a753-44eb0298ce2e",
+      "name": "Telegram Trigger",
+      "webhookId": "559aae30-a5a4-435b-abfd-7594e0101f48",
+      "credentials": {
+        "telegramApi": {
+          "id": "i5L4ZzMgpp2s7eUx",
+          "name": "Nour Stock telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "for item in _input.all():\n    text = item.json[\"message\"][\"text\"]  \n  \n    parts = text.split()\n    if len(parts) == 2:\n        item_name = parts[0]\n        try:\n            quantity = int(parts[1])\n        except:\n            quantity = None\n    else:\n        item_name = text\n        quantity = None\n\n    item.json[\"item_name\"] = item_name\n    item.json[\"quantity\"] = quantity\n\nreturn _input.all()\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3732f166-a485-4aa0-8bea-d4c0ef126b45",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE",
+          "mode": "list",
+          "cachedResultName": "stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Item",
+              "lookupValue": "={{ $json.item_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c74c2ebc-d659-4e63-8598-c03dc1ed4015",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE",
+          "mode": "list",
+          "cachedResultName": "stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TQqznVJxgG1ch6PVIgacpf3hRy1Mf91x3l5oxeeixaE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item": "={{ $json.Item }}",
+            "ID": "={{ $json.ID }}",
+            "Number": "={{ Number($json[\"Number\"]) + Number($(\"Code\").item.json[\"quantity\"]) }}\n",
+            "Unite": "={{ $json.Unite }}"
+          },
+          "matchingColumns": [
+            "Item"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unite",
+              "displayName": "Unite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "d9ad953d-c5b2-4b9f-825b-fd6f62d1efc9",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=We Have Updated  \n{{ $('Get row(s) in sheet').item.json.Item }}   in Your Stock we have Now   {{ $('Get row(s) in sheet').item.json.Number }}  {{ $('Get row(s) in sheet').item.json.Item }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "da9f8e62-42c7-4d50-98b9-25993bdadaf1",
+      "name": "Send a text message",
+      "webhookId": "8f71e723-fc91-4a7f-a900-3dec0a6bee08",
+      "credentials": {
+        "telegramApi": {
+          "id": "i5L4ZzMgpp2s7eUx",
+          "name": "Nour Stock telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Norkov Tech",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Item",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Laptop"
+                  },
+                  {
+                    "option": "Phone"
+                  },
+                  {
+                    "option": "Tablet"
+                  },
+                  {
+                    "option": "IPhone"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Phone Number",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Name "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        240
+      ],
+      "id": "d98db8ed-f13e-4793-bc02-8e49ecd6a5cb",
+      "name": "On form submission",
+      "webhookId": "0b002ffb-6bf2-43fa-be48-652f032fd8e8"
+    },
+    {
+      "parameters": {
+        "chatId": "1602515408",
+        "text": "=Hi,\nWe have a New Order:\n{{ $('On form submission').item.json.Item }}\nFrom : {{ $('On form submission').item.json['Name '] }}\nOrder Number: {{ $json['Last Number'] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        368
+      ],
+      "id": "0679ca4e-2c81-4a86-be35-2b980aecf3bb",
+      "name": "Send a text message1",
+      "webhookId": "7547b249-b5eb-4654-9f99-20bd47ed1561",
+      "credentials": {
+        "telegramApi": {
+          "id": "i5L4ZzMgpp2s7eUx",
+          "name": "Nour Stock telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('On form submission').item.json.submittedAt }}",
+            "Item": "={{ $('On form submission').item.json.Item }}",
+            "For": "={{ $('On form submission').item.json['Name '] }}",
+            "Phone": "={{ $('On form submission').item.json['Phone Number'] }}",
+            "Status": "Process",
+            "Order_Number": "={{ $json['Last Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Number",
+              "displayName": "Order_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "For",
+              "displayName": "For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        176
+      ],
+      "id": "7a4d9ccb-8455-4418-902d-9909af8433e0",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        736
+      ],
+      "id": "1518423c-9d15-4f9d-91e7-00009d2cc8f2",
+      "name": "Telegram Trigger1",
+      "webhookId": "41231223-7ffb-4b2e-875d-1d07bdcf7e64",
+      "credentials": {
+        "telegramApi": {
+          "id": "i5L4ZzMgpp2s7eUx",
+          "name": "Nour Stock telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Status }}",
+                    "rightValue": "Done",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0adecc97-f954-4729-acca-8442d30b318c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Done"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2f6b1583-8a5b-402f-ac9d-96dae0ed941f",
+                    "leftValue": "={{ $json.Status }}",
+                    "rightValue": "Cancel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cancel"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        192,
+        736
+      ],
+      "id": "cdedf7f1-7c1f-43dc-ac5c-f7f3acc71b46",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 199175873,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=199175873"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        240
+      ],
+      "id": "ecfcbb47-7580-4411-a3d8-5c46f909ea0a",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 199175873,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=199175873"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Last Name": "={{ $json.Order_Number + 1 }}",
+            "row_number": 2
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        176
+      ],
+      "id": "67d0e28c-ae41-4855-a7f7-d9d70e568912",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "={{ $('Code1').item.json.Status }}",
+            "Order_Number": "={{ $json.Order_Number }}"
+          },
+          "matchingColumns": [
+            "Order_Number"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Number",
+              "displayName": "Order_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "For",
+              "displayName": "For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        608
+      ],
+      "id": "158b7bdb-0a09-49fa-8ada-362e61d50c30",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "for item in _input.all():\n    text = item.json[\"message\"][\"text\"]\n\n    parts = text.split()\n    if len(parts) == 2:\n        order_number = int(parts[0]) if parts[0].isdigit() else parts[0]\n        status = parts[1]\n    else:\n        order_number = text\n        status = None\n\n    item.json[\"Order_Number\"] = order_number\n    item.json[\"Status\"] = status\n\nreturn _input.all()\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        736
+      ],
+      "id": "32d8eea3-66d5-4315-92b2-5f29c7c37ede",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "={{ $('Code1').item.json.Status }}",
+            "Order_Number": "={{ $json.Order_Number }}"
+          },
+          "matchingColumns": [
+            "Order_Number"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Number",
+              "displayName": "Order_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "For",
+              "displayName": "For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        816
+      ],
+      "id": "4a4d6a52-e71f-40a1-9dd3-9ce4d8352f6e",
+      "name": "Update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Order_Number",
+              "lookupValue": "={{ $json.Order_Number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        608
+      ],
+      "id": "b521f220-5311-4028-a100-be07043c6763",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Item",
+              "lookupValue": "={{ $json.Item }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        928,
+        608
+      ],
+      "id": "19a7d8a4-bd7d-4455-adce-08547fca6b84",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80",
+          "mode": "list",
+          "cachedResultName": "Stock1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c0Cx_DlhJ-ak5ci2RqDDwlhgIo8r2k1EdaNAfEJbH80/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item": "={{ $json.Item }}",
+            "Order_Number": "={{ $json.Order_Number - 1 }}"
+          },
+          "matchingColumns": [
+            "Item"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Number",
+              "displayName": "Order_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "For",
+              "displayName": "For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        608
+      ],
+      "id": "90d9a2d6-faeb-4be1-a42a-62547c9f3c4b",
+      "name": "Update row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bw2qzM6u2vPj8BBR",
+          "name": "Google Sheets account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "71481aac-da6f-4704-9295-8171f82c6f7a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1c0a53a70d997f03f90f948127146ab3fa065fac88129dcdbd96427f5abbc4b1"
+  },
+  "id": "WJw7XiGeuUlY1Dyt",
+  "tags": []
+}
